@@ -38,7 +38,7 @@ fun PINScreen(onVerified: () -> Unit, onSetup: () -> Unit) {
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
-                textAlign = TextAlign.Center    // ⟵ використовуємо TextAlign
+                textAlign = TextAlign.Center
             )
         }
         Spacer(Modifier.height(24.dp))

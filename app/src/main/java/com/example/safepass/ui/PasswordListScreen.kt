@@ -6,15 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -24,7 +17,12 @@ import com.example.safepass.storage.PasswordRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PasswordListScreen(repo: PasswordRepository, onAdd: () -> Unit, onDetail: (Long) -> Unit) {
+fun PasswordListScreen(
+    repo: PasswordRepository,
+    onAdd: () -> Unit,
+    onDetail: (Long) -> Unit,
+    onLogout: () -> Unit
+) {
     val entries = repo.getAll().collectAsState(initial = emptyList())
 
     Scaffold(
@@ -37,11 +35,19 @@ fun PasswordListScreen(repo: PasswordRepository, onAdd: () -> Unit, onDetail: (L
                         Spacer(Modifier.width(4.dp))
                         Text("Add password")
                     }
+                    Spacer(Modifier.width(8.dp))
+                    IconButton(onClick = onLogout) {
+                        Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
+                    }
                 }
             )
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
             if (entries.value.isEmpty()) {
                 Column(
                     modifier = Modifier.align(Alignment.Center),
@@ -58,7 +64,8 @@ fun PasswordListScreen(repo: PasswordRepository, onAdd: () -> Unit, onDetail: (L
             } else {
                 LazyColumn {
                     items(entries.value) { entry ->
-                        Text(entry.title,
+                        Text(
+                            text = entry.title,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { onDetail(entry.id) }

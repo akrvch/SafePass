@@ -17,7 +17,14 @@ fun AppNavGraph(repository: PasswordRepository) {
         composable("login") { LoginScreen(onLogin = { navController.navigate("pin") }, onRegister = { navController.navigate("register") }) }
         composable("register") { RegisterScreen(onRegistered = { navController.navigate("pin") }) }
         composable("pin") { PINScreen(onVerified = { navController.navigate("list") }, onSetup = { navController.navigate("list") }) }
-        composable("list") { PasswordListScreen(repo = repository, onAdd = { navController.navigate("edit?entryId=-1") }, onDetail = { id -> navController.navigate("detail/$id") }) }
+        composable("list") {
+            PasswordListScreen(
+                repo = repository,
+                onAdd = { navController.navigate("edit?entryId=-1") },
+                onDetail = { id -> navController.navigate("detail/$id") },
+                onLogout = { navController.navigate("login") { popUpTo("login") { inclusive = true } } }
+            )
+        }
         composable("detail/{entryId}", arguments = listOf(navArgument("entryId") { type = NavType.LongType })) { back ->
             val id = back.arguments!!.getLong("entryId")
             PasswordDetailScreen(id = id, repo = repository, onEdit = { navController.navigate("edit?entryId=$id") }, onDelete = { navController.popBackStack("list", false) })
