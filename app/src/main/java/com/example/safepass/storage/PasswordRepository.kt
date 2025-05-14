@@ -7,30 +7,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
-class PasswordRepository(context: Context) {
-    private val dao = AppDatabase.get(context).passwordDao()
+class PasswordRepository(ctx: Context) {
+    private val dao = AppDatabase.get(ctx).passwordDao()
+    fun getAll(): Flow<List<PasswordEntity>> = dao.getAll().flowOn(Dispatchers.IO)
+    suspend fun get(id: Long): PasswordEntity? = withContext(Dispatchers.IO) { dao.getById(id) }
+    suspend fun add(title: String, user: String?, pwd: String) = withContext(Dispatchers.IO) {
+        dao.insert(
+            PasswordEntity(
+                title = title,
+                username = user,
+                password = pwd
+            )
+        )
+    }
 
-    fun getAll(): Flow<List<PasswordEntity>> =
-        dao.getAll()
-            .flowOn(Dispatchers.IO)
-
-    suspend fun get(id: Long): PasswordEntity? =
-        withContext(Dispatchers.IO) {
-            dao.getById(id)
-        }
-
-    suspend fun add(title: String, username: String?, password: String) =
-        withContext(Dispatchers.IO) {
-            dao.insert(PasswordEntity(title = title, username = username, password = password))
-        }
-
-    suspend fun update(entity: PasswordEntity) =
-        withContext(Dispatchers.IO) {
-            dao.update(entity)
-        }
-
-    suspend fun delete(entity: PasswordEntity) =
-        withContext(Dispatchers.IO) {
-            dao.delete(entity)
-        }
+    suspend fun update(e: PasswordEntity) = withContext(Dispatchers.IO) { dao.update(e) }
+    suspend fun delete(e: PasswordEntity) = withContext(Dispatchers.IO) { dao.delete(e) }
 }

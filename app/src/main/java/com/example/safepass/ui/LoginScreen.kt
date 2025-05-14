@@ -16,13 +16,19 @@ fun LoginScreen(onLogin: () -> Unit, onRegister: () -> Unit) {
     val ctx = LocalContext.current
     var user by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
-    Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text("Login", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(12.dp))
         OutlinedTextField(value = user, onValueChange = { user = it }, label = { Text("Username") })
         OutlinedTextField(value = pass, onValueChange = { pass = it }, label = { Text("Password") }, visualTransformation = PasswordVisualTransformation())
         Spacer(Modifier.height(12.dp))
-        Button(onClick = { if (AuthManager.login(user.trim(), pass)) onLogin() else Toast.makeText(ctx, "Invalid credentials", Toast.LENGTH_SHORT).show() }) { Text("Login") }
+        Button(onClick = { if (AuthManager.login(user.trim(), pass)) onLogin() else Toast.makeText(ctx, "Invalid credentials", Toast.LENGTH_SHORT).show() }) {
+            Text("Login")
+        }
         TextButton(onClick = onRegister) { Text("Register") }
     }
 }

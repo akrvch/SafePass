@@ -1,5 +1,6 @@
 package com.example.safepass.storage
 
+
 object AuthManager {
     private var registeredUser: String? = null
     private var registeredPass: String? = null

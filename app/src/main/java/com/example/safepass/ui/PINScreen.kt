@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -15,10 +16,7 @@ import com.example.safepass.storage.PinManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PINScreen(
-    onVerified: () -> Unit,
-    onSetup: () -> Unit
-) {
+fun PINScreen(onVerified: () -> Unit, onSetup: () -> Unit) {
     val ctx = LocalContext.current
     var pin by remember { mutableStateOf("") }
     val isSetup = !PinManager.isPinSet()
@@ -30,32 +28,35 @@ fun PINScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = if (isSetup) "Set your 4-digit PIN" else "Enter your 4-digit PIN",
-            style = MaterialTheme.typography.headlineSmall
-        )
+        Card(
+            elevation = CardDefaults.cardElevation(8.dp),
+            modifier = Modifier.fillMaxWidth(0.8f)
+        ) {
+            Text(
+                text = if (isSetup) "Set your 4-digit PIN" else "Enter your 4-digit PIN",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center    // ⟵ використовуємо TextAlign
+            )
+        }
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
             value = pin,
             onValueChange = { pin = it.filter { ch -> ch.isDigit() }.take(4) },
             label = { Text("PIN") },
             singleLine = true,
-            visualTransformation = VisualTransformation.None,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            visualTransformation = VisualTransformation.None,
             modifier = Modifier.width(200.dp)
         )
         Spacer(Modifier.height(24.dp))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(onClick = {
                 if (isSetup) {
-                    if (pin.length == 4) {
-                        PinManager.savePIN(pin)
-                        onSetup()
-                    } else {
-                        Toast.makeText(ctx, "Enter exactly 4 digits", Toast.LENGTH_SHORT).show()
-                    }
+                    if (pin.length == 4) { PinManager.savePIN(pin); onSetup() }
+                    else Toast.makeText(ctx, "Enter exactly 4 digits", Toast.LENGTH_SHORT).show()
                 } else {
                     if (PinManager.verifyPIN(pin)) onVerified()
                     else Toast.makeText(ctx, "Invalid PIN", Toast.LENGTH_SHORT).show()
@@ -63,8 +64,10 @@ fun PINScreen(
             }) {
                 Text(if (isSetup) "Set PIN" else "Verify PIN")
             }
-            TextButton(onClick = { onSetup() }) {
-                Text("Later")
+            if (isSetup) {
+                TextButton(onClick = { onSetup() }) {
+                    Text("Later")
+                }
             }
         }
     }

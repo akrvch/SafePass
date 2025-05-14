@@ -7,11 +7,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.safepass.storage.PasswordRepository
+import com.example.safepass.storage.PinManager
 
 @Composable
 fun AppNavGraph(repository: PasswordRepository) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "login") {
+    val start = if (PinManager.isPinSet()) "pin" else "login"
+    NavHost(navController = navController, startDestination = start) {
         composable("login") { LoginScreen(onLogin = { navController.navigate("pin") }, onRegister = { navController.navigate("register") }) }
         composable("register") { RegisterScreen(onRegistered = { navController.navigate("pin") }) }
         composable("pin") { PINScreen(onVerified = { navController.navigate("list") }, onSetup = { navController.navigate("list") }) }
